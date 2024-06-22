@@ -34,7 +34,7 @@ const NoteItem = ({ note, index, moveNote, onStatusChange }) => {
         className="mt-2"
       >
         <option value="todo">Todo</option>
-        <option value="in-progress">In Progress</option>
+        <option value="in-progress">In Progress</option> 
         <option value="done">Done</option>
       </select>
     </div>

@@ -1,7 +1,11 @@
 // pages/index.js
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateFileContent, updateFileItems } from "../../slices/folderSlice";
+import {
+  updateFileContent,
+  updateFileItems,
+  updateFileNotes,
+} from "../../slices/folderSlice";
 import Sidebar from "@/components/Sidebar";
 import NoteMaker from "@/components/NoteMaker";
 import ListMaker from "@/components/ListMaker";
@@ -77,7 +81,7 @@ const Home = () => {
           <NoteMaker
             folderName={currentFolder.name}
             fileName={currentFile.name}
-            notes={currentFile.notes}
+            notes={currentFile.notes || []} // Ensure notes is always an array
             onNotesChange={handleNotesChange}
           />
         )}
@@ -85,14 +89,13 @@ const Home = () => {
           <ListMaker
             folderName={currentFolder.name}
             fileName={currentFile.name}
-            items={currentFile.items}
+            items={currentFile.items || []} // Ensure items is always an array
             onItemsChange={handleItemsChange}
           />
         )}
         {currentFile && currentFile.name.endsWith('.readme') && (
           <ReadmeViewer content={currentFile.content} />
         )}
-        {/* Add other file type handling here */}
       </div>
     </div>
   );

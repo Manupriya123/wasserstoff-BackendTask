@@ -22,7 +22,7 @@ const folderSlice = createSlice({
           folder.files.push({
             name: fileName,
             content: "",
-            type: getFileType(fileName),
+            notes: [],
             items: [],
           });
         }
@@ -48,6 +48,21 @@ const folderSlice = createSlice({
         }
       }
     },
+    updateFileNotes: (state, action) => {
+      const { folderName, fileName, notes } = action.payload;
+      const folder = state.folders.find((folder) => folder.name === folderName);
+      if (folder) {
+        const fileIndex = folder.files.findIndex(
+          (file) => file.name === fileName
+        );
+        if (fileIndex !== -1) {
+          folder.files[fileIndex] = {
+            ...folder.files[fileIndex],
+            notes: notes,
+          };
+        }
+      }
+    },
     deleteFile: (state, action) => {
       const { folderName, fileName } = action.payload;
       const folder = state.folders.find((folder) => folder.name === folderName);
@@ -59,9 +74,11 @@ const folderSlice = createSlice({
       const { folderName, oldFileName, newFileName } = action.payload;
       const folder = state.folders.find((folder) => folder.name === folderName);
       if (folder) {
-        const file = folder.files.find((file) => file.name === oldFileName);
-        if (file) {
-          file.name = newFileName;
+        const fileIndex = folder.files.findIndex(
+          (file) => file.name === oldFileName
+        );
+        if (fileIndex !== -1) {
+          folder.files[fileIndex].name = newFileName;
         }
       }
     },
@@ -82,16 +99,12 @@ const folderSlice = createSlice({
   },
 });
 
-function getFileType(fileName) {
-  const ext = fileName.split(".").pop();
-  return ext;
-}
-
 export const {
   createFolder,
   createFile,
   updateFileContent,
   updateFileItems,
+  updateFileNotes,
   deleteFile,
   renameFile,
   deleteFolder,

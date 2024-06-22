@@ -1,33 +1,44 @@
 // components/ListMaker.js
-import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { updateFileItems } from '../../slices/folderSlice';
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { updateFileItems } from "../../slices/folderSlice";
+import { useSpring, animated } from 'react-spring';
+
+const ItemType = 'ITEM';
 
 const ListItem = ({ item, index, moveItem, removeItem }) => {
-  const [, ref] = useDrag({
-    type: 'ITEM',
-    item: { index }
+  const [{ isDragging }, dragRef] = useDrag({
+    type: ItemType,
+    item: { index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
   });
 
-  const [, drop] = useDrop({
-    accept: 'ITEM',
+  const [, dropRef] = useDrop({
+    accept: ItemType,
     hover: (draggedItem) => {
       if (draggedItem.index !== index) {
         moveItem(draggedItem.index, index);
         draggedItem.index = index;
       }
-    }
+    },
+  });
+
+  const animatedStyle = useSpring({
+    opacity: isDragging ? 0.5 : 1,
+    transform: isDragging ? 'scale(1.1)' : 'scale(1)',
   });
 
   return (
-    <div ref={node => ref(drop(node))} className="flex items-center mb-2">
+    <animated.div ref={(node) => dragRef(dropRef(node))} style={animatedStyle} className="flex items-center mb-2">
       <span className="flex-1">{item}</span>
       <button onClick={() => removeItem(index)} className="text-red-500 ml-2">
         Remove
       </button>
-    </div>
+    </animated.div>
   );
 };
 
@@ -98,5 +109,4 @@ const ListMaker = ({ folderName, fileName, items = [], onItemsChange }) => {
     </DndProvider>
   );
 };
-
 export default ListMaker;
